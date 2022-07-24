@@ -1,2 +1,2 @@
-# Shell-in-C
+# Shell-in-C 🐚
 CS50 Final Project
