@@ -1,5 +1,5 @@
 all: main.o
-	gcc -c shell main.o
+	gcc -o Cshell main.o
 
 main.o: main.c
 	gcc -c main.c -o main.o
