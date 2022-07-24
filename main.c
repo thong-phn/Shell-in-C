@@ -7,12 +7,16 @@
 #include <string.h>
 #include <sys/wait.h>
 #include <unistd.h>
+#include "builtInCommands.h"
 
-/**
+extern char *builtInString[];
+extern int (*builtInFunction[]) (char **);
+
+/*************************************************
  * @brief Reading a line
  * 
  * @return char* 
- */
+ ************************************************/
 char *readLine(void) {
     int bufferSize = BUFFER_SIZE;
     int position = 0;
@@ -49,12 +53,12 @@ char *readLine(void) {
     }
 }
 
-/**
+/***********************************************
  * @brief Spliting a line into args
  * 
  * @param line 
  * @return char** List of args (tokens)
- */
+ ***********************************************/
 char **splitLine(char *line) {
     int bufferSize = TOK_BUFFER_SIZE;
     int position = 0;
@@ -88,12 +92,12 @@ char **splitLine(char *line) {
     return tokens;
 }
 
-/**
+/*************************************************
  * @brief Start processes
  * 
  * @param args 
  * @return int 
- */
+ ************************************************/
 int launch(char **args) {
     pid_t pid, wpid;
     int status;
@@ -102,12 +106,12 @@ int launch(char **args) {
     if (pid == 0) {
         // Child 
         if (execvp(args[0], args) == -1) {
-            perror("Error: ");
+            perror("Error");
         }
         exit(EXIT_FAILURE);
     } else if (pid < 0) {
         // Error forking
-        perror("Error: ");
+        perror("Error");
     } else {
         // Parent
         do {
@@ -118,54 +122,12 @@ int launch(char **args) {
     return 1;
 }
 
-/** Shell builtin **/
-int builtInCD(char **args);
-int builtInHELP(char **args);
-int builtInEXIT(char **args);
-
-char *builtInString[] = {
-    "cd",
-    "help",
-    "exit"
-};
-
-int (*builtInFunction[]) (char **) = {
-    &builtInCD,
-    &builtInHELP,
-    &builtInEXIT
-};
-
-int numberOfBuiltIns() {
-    return sizeof(builtInString)/sizeof(char *);
-}
-
-int builtInCD(char **args) {
-    if (args[1] == NULL) {
-        printf("cd: expected argument to \" cd\"\n");
-    } else {
-        if (chdir(args[1]) != 0) {
-            perror("Error: ");
-        }
-    }
-    return 1;
-}
-
-int builtInHELP(char **args) {
-    printf("Thong P. Shell\n");
-    printf("This is CS50\n");
-    printf("The following commands are built in:\n");
-
-    for (int i = 0; i < numberOfBuiltIns(); i++) {
-        printf(" %s\n", builtInString[i]);
-    }
-
-    return 1;
-}
-
-int builtInEXIT(char **args) {
-    return 0;
-}
-
+/*************************************************
+ * @brief Execute commands
+ * 
+ * @param args 
+ * @return int 
+ ************************************************/
 int execute(char **args) {
     if (args[0] == NULL) {
         // empty command
@@ -180,6 +142,11 @@ int execute(char **args) {
 
     return launch(args);
 }
+
+/*************************************************
+ * @brief The main loop that processes everything
+ * 
+ ************************************************/
 void myLoop(void) {
     char *line;
     char **args;
@@ -195,6 +162,7 @@ void myLoop(void) {
         free(args);
     } while (status);
 }
+
 
 int main(int argc, char **argv) {
     // Load config file
