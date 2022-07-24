@@ -1,5 +1,5 @@
-# CShell
-A :shell: written in C 
+# Shell-in-C 🐚
+A :shell: written in C
 CS50 Final Project
 ## About a shell
 - A shell is a program that presents a command-line interface (CLI) which allows users to control via commands
